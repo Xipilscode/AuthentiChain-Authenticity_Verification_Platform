@@ -1,18 +1,8 @@
-import streamlit as st
-from web3 import Web3
-import uuid
-import qrcode
-
+from statsmodels.tsa.stattools import adfuller
+import pandas as pd
 # Load Ethereum smart contract ABI and address (replace with your own values)
 CONTRACT_ABI = 'your_smart_contract_abi'
 CONTRACT_ADDRESS = 'your_smart_contract_address'
-
-# # Connect to Ethereum network (Infura, local node, or other provider)
-# w3 = Web3(Web3.HTTPProvider("your_rpc_endpoint"))
-
-# # Initialize contract object
-# contract = w3.eth.contract(address=CONTRACT_ADDRESS, abi=CONTRACT_ABI)
-
 
 # Utility function to generate unique identifier for products
 def generate_unique_identifier(product_name, product_desc):
@@ -72,16 +62,16 @@ def generate_qr_code(input_data):
 
 
 
-    # # Add the input data to the QRCode object
-    # qr.add_data(input_data)
+#     # Add the input data to the QRCode object
+#     qr.add_data(input_data)
 
-    # # Optimize the QR code data for the given input
-    # qr.make(fit=True)
+#     # Optimize the QR code data for the given input
+#     qr.make(fit=True)
 
-    # # Create an image from the QR code data
-    # img = qr.make_image(fill_color="black", back_color="white")
+#     # Create an image from the QR code data
+#     img = qr.make_image(fill_color="black", back_color="white")
 
-    # return img
+#     return img
 
 
 # Verify product authenticity using unique identifier
@@ -103,38 +93,28 @@ def verify_product(unique_identifier):
         return False, None
 
 
-# Streamlit UI
-st.title("AuthentiChain")
-selected_role = st.sidebar.radio("Select Role", ["Manufacturer", "Supply Chain", "Buyer"])
+# Define a function to perform the Augmented Dickey-Fuller test
+def check_stationarity(data):
+    """
+    Perform Augmented Dickey-Fuller test to check for stationarity.
+    
+    Arguments:
+    Pandas Series: a series of data to be checked for stationarity.
+    
+    Returns:
+    Prints test statistics and critical values.
+    """
+    # Perform Augmented Dickey-Fuller test
+    # Perform the test using the AIC criterion for choosing the number of lags
+    print('Results of Augmented Dickey-Fuller Test:')
+    adf_test = adfuller(data, autolag='AIC')  
 
-if selected_role == "Manufacturer":
-    st.header("Manufacturer")
-    with st.form(key="product_form"):
-        product_name = st.text_input("Product Name")
-        product_desc = st.text_input("Product Description")
-        submit_button = st.form_submit_button("Generate QR Code")
+    # Extract and print the test statistics and critical values
+    adf_output = pd.Series(adf_test[0:4], 
+                           index=['Test Statistic', 'p-value', '#Lags Used', 'Number of Observations Used'])
+    
+    for key, value in adf_test[4].items():
+        adf_output['Critical Value (%s)' % key] = value
+    print(adf_output)
+    return adf_output
 
-        if submit_button:
-            unique_identifier = generate_unique_identifier(product_name, product_desc)
-            qr_image = generate_qr_code(unique_identifier)
-            st.image(qr_image, caption="Generated QR Code", use_column_width=True)
-
-elif selected_role == "Supply Chain":
-    st.header("Supply Chain")
-    # Implement supply chain functionality (e.g., scanning QR codes, updating product information, etc.)
-
-elif selected_role == "Buyer":
-    st.header("Buyer")
-    unique_identifier = st.text_input("Enter Unique Identifier")
-    verify_button = st.button("Verify Product Authenticity")
-
-    if verify_button:
-        is_valid, product = verify_product(unique_identifier)
-        if is_valid:
-            st.success("Product is authentic")
-            # Display product information and history
-        else:
-            st.error("Product could not be verified")
-
-if __name__ == "__main__":
-    st.run()
