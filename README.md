@@ -186,7 +186,7 @@ Once the optimal ARIMA model is selected, this section allows you to make future
 
 The application provides an interactive interface where you can adjust the data preprocessing techniques, explore different ARIMA model parameters, and observe the corresponding forecasts. This allows you to iteratively refine the modeling process and improve the accuracy of the predictions.
 
-![alt-image](Images/visualize_predictions)
+![alt-image](Images/visualize_predictions.png)
 
 Overall, this application simplifies the process of time series analysis and forecasting using the ARIMA model, making it accessible to users without extensive knowledge of the underlying concepts and programming.
 
