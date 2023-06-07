@@ -196,7 +196,7 @@ Run the application using Streamlit:
 
 ```bash
 streamlit run app.py
-'''
+```
 
 ## Developers
 
